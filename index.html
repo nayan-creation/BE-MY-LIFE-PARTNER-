@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Be My Valentine (Nayan)💘</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+      background-size: 400% 400%;
+      animation: bgMove 12s ease infinite;
+      font-family: "Poppins", sans-serif;
+      overflow: hidden;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* --- Envelope Wrapper --- */
+    .envelope-wrapper {
+      position: relative;
+      cursor: pointer;
+      transition: 0.5s;
+      z-index: 100;
+    }
+
+    .envelope {
+      position: relative;
+      width: 280px;
+      height: 180px;
+      background: #ff4d6d;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .envelope::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      z-index: 2;
+      border-left: 140px solid transparent;
+      border-right: 140px solid transparent;
+      border-top: 100px solid #ff758f;
+      transform-origin: top;
+      transition: transform 0.5s 0.3s;
+    }
+
+    .envelope-wrapper.open .envelope::before {
+      transform: rotateX(180deg);
+      z-index: 0;
+    }
+
+    .envelope-wrapper.open {
+        transform: translateY(-50px);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* --- Main Card --- */
+    .card {
+      width: min(92%, 400px);
+      padding: 40px 20px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(18px);
+      border-radius: 28px;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+      position: absolute;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    .card.show {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .emoji { font-size: 60px; margin-bottom: 12px; animation: heartbeat 1.8s infinite; }
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+
+    h2 { font-family: "Playfair Display", serif; font-size: 26px; color: #4a1c2f; margin-bottom: 30px; }
+
+    .buttons {
+      position: relative;
+      height: 80px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+
+    button {
+      width: 120px;
+      height: 50px;
+      border-radius: 40px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #yes {
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: #fff;
+    }
+
+    #no {
+      background: rgba(255,255,255,0.9);
+      color: #777;
+      position: relative; 
+      z-index: 999;
+      transition: all 0.25s ease-out; /* Slightly slower for better control */
+    }
+
+    .quotation {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #6b6b6b;
+      font-style: italic;
+      display: block;
+    }
+
+    .watermark {
+      position: fixed;
+      bottom: 20px;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .heart { position: absolute; bottom: -20px; animation: floatUp linear forwards; pointer-events: none; }
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(1); opacity: 1; }
+      to { transform: translateY(-120vh) scale(1.8); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="envelope-wrapper" id="envelopeWrap">
+    <div class="envelope"></div>
+    <p style="margin-top: 20px; color: white; font-weight: 600; text-align: center;">You have a letter! 💌</p>
+  </div>
+
+  <div class="card" id="mainCard">
+    <div class="emoji">🐱❤️</div>
+    <h2>Hey,<br>will you be my Life Partner?</h2>
+    <div class="buttons" id="btnContainer">
+      <button id="yes">Yes 💖</button>
+      <button id="no">No 🙈</button>
+    </div>
+    <span class="quotation">"Some love stories don't allow no"</span>
+  </div>
+
+  <div class="watermark">NAYAN CREATION</div>
+
+  <audio id="hoverSound" src="https://assets.mixkit.co/sfx/preview/mixkit-cartoon-voice-laugh-343.mp3"></audio>
+  <audio id="yesSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+
+  <script>
+    const envelopeWrap = document.getElementById("envelopeWrap");
+    const card = document.getElementById("mainCard");
+    const noBtn = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
+    const hoverSound = document.getElementById("hoverSound");
+    const yesSound = document.getElementById("yesSound");
+
+    envelopeWrap.addEventListener("click", () => {
+      envelopeWrap.classList.add("open");
+      setTimeout(() => {
+        envelopeWrap.style.display = "none";
+        card.classList.add("show");
+      }, 600);
+    });
+
+    function moveNoButton() {
+      hoverSound.currentTime = 0;
+      hoverSound.play();
+
+      // Get Card boundaries
+      const cardRect = card.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      if (noBtn.style.position !== 'fixed') {
+        noBtn.style.left = btnRect.left + "px";
+        noBtn.style.top = btnRect.top + "px";
+        noBtn.style.position = 'fixed';
+        noBtn.style.margin = '0';
+      }
+
+      // Restrict "No" button to stay within the card area
+      // We add a small buffer (padding) inside the card
+      const padding = 15;
+      
+      const minX = cardRect.left + padding;
+      const maxX = cardRect.right - noBtn.offsetWidth - padding;
+      
+      const minY = cardRect.top + padding;
+      const maxY = cardRect.bottom - noBtn.offsetHeight - padding;
+
+      const randomX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+      const randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+
+      noBtn.style.left = randomX + "px";
+      noBtn.style.top = randomY + "px";
+    }
+
+    noBtn.addEventListener("mouseover", moveNoButton);
+    noBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault(); 
+        moveNoButton();
+    });
+
+    yesBtn.addEventListener("click", () => {
+      yesSound.play();
+      confetti({ particleCount: 260, spread: 120, origin: { y: 0.65 } });
+      setTimeout(() => { alert("YAY 💕 I can’t wait for that life with you!"); }, 500);
+    });
+
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.innerHTML = Math.random() > 0.5 ? "❤️" : "💗";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = Math.random() * 22 + 14 + "px";
+      heart.style.animationDuration = Math.random() * 3 + 4 + "s";
+      heart.style.opacity = Math.random() * 0.5 + 0.4;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 8000);
+    }
+    setInterval(createHeart, 380);
+  </script>
+</body>
+</html>
